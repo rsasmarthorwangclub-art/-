@@ -755,23 +755,18 @@
     }
 
     /* โหลดข้อมูลโดยตรงจากตาราง participants ใน SQL */
-    async function loadCheckinData() {
+     async function loadCheckinData() {
       try {
-        const { data, error } = await supabaseClient
-          .from('participants')
-          .select('*')
-          .order('created_at', { ascending: true });
-
+        const { data, error } = await supabaseClient.from('attendance_status').select('*').order('created_at', { ascending: true });
         if (error) throw error;
-
         checkinListData = data || [];
         renderCheckinList();
       } catch (err) {
-        console.error('Error loading checkin data:', err);
-        document.getElementById('checkin-list-container').innerHTML = 
-          `<p class="text-center text-red-500 py-6">ไม่สามารถโหลดข้อมูลรายชื่อได้: ${err.message}</p>`;
+        console.error(err);
+        document.getElementById('checkin-list-container').innerHTML = `<p class="text-center text-red-500 py-6">ไม่สามารถโหลดข้อมูลรายชื่อได้</p>`;
       }
     }
+
 
    function renderCheckinList() {
       const container = document.getElementById('checkin-list-container');
@@ -798,6 +793,7 @@
           const fullName = `${prefixStr}${p.first_name} ${p.last_name}`;
           const subInfo = `${p.school || 'ม.5/3'} • ${p.phone || 'ไม่ระบุเบอร์'}`;
           const codeId = p.id ? String(p.id).slice(-5) : '1388' + index;
+          
  container.innerHTML += `
             <div class="py-3 flex justify-between items-center border-b border-gray-100 last:border-none gap-2">
               <div>
@@ -817,48 +813,35 @@
           `;
         });
       }
+     
+     document.getElementById('stat-total').innerText = total + ' คน';
+      document.getElementById('stat-present').innerText = present + ' คน';
+      document.getElementById('stat-late').innerText = late + ' คน';
+      document.getElementById('stat-leave').innerText = leave + ' คน';
+      document.getElementById('stat-absent').innerText = absent + ' คน';
     }
 
-    /* ฟังก์ชันสลับสถานะและบันทึกลง SQL โดยตรง */
-    async function toggleCheckInStatus(participantId, currentStatus) {
-      const btn = document.getElementById(`btn-check-${participantId}`);
-      const newStatus = !currentStatus;
-      const attendanceValue = newStatus ? 'มา' : 'ขาด';
-
-      // 1. เปลี่ยน UI ทันที
-      if (newStatus) {
-        btn.className = "px-4 py-1.5 rounded-xl border text-xs cursor-pointer btn-checkin-on";
-        btn.innerHTML = "✓ มาแล้ว";
-      } else {
-        btn.className = "px-4 py-1.5 rounded-xl border text-xs cursor-pointer btn-checkin-off";
-        btn.innerHTML = "ยังไม่มา";
-      }
-
-      btn.setAttribute("onclick", `toggleCheckInStatus('${participantId}', ${newStatus})`);
-
-      // อัปเดตข้อมูลภายในอาร์เรย์
-      const target = checkinListData.find(item => String(item.id) === String(participantId));
-      if (target) {
-        target.checked_in = newStatus;
-        target.attendance_status = attendanceValue;
-      }
-
-      // 2. ส่งคำสั่ง UPDATE ไปที่ SQL Database (ตาราง participants)
+    async function setAttendance(id, status) {
       try {
-        const { error } = await supabaseClient
-          .from('participants')
-          .update({ 
-            checked_in: newStatus,
-            attendance_status: attendanceValue 
-          })
-          .eq('id', participantId);
-
+        const isChecked = (status === 'มา' || status === 'สาย');
+        const { error } = await supabaseClient.from('attendance_status').update({ 
+          attendance_status: status,
+          checked_in: isChecked
+        }).eq('id', id);
+        
         if (error) throw error;
+        
+        const target = checkinListData.find(item => String(item.id) === String(id));
+        if (target) {
+          target.attendance_status = status;
+          target.checked_in = isChecked;
+        }
+        renderCheckinList();
       } catch (err) {
-        console.error('Update failed:', err);
-        alert("❌ ไม่สามารถอัปเดตลง SQL ได้: " + err.message);
+        alert("❌ ไม่สามารถอัปเดตสถานะได้: " + err.message);
       }
     }
+
 
     async function deleteParticipant(id, fullName, activityId = null) {
       if (!confirm(`⚠️ คุณแน่ใจหรือไม่ที่จะลบรายชื่อ "${fullName}" ออกจากระบบ?`)) return;
