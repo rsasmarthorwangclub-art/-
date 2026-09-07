@@ -328,13 +328,14 @@
             <button onclick="logoutAdmin()" class="text-xs bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-lg hover:bg-red-200 transition">ออกจากระบบ</button>
           </div>
 
-          <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-2xl flex items-start space-x-3">
-            <span class="text-xl">ℹ️</span>
-            <div class="text-sm">
-              <span class="font-bold">กดปุ่มเพื่อบันทึกสถานะลง SQL แบบเรียลไทม์:</span><br>
-              ปุ่มสีเขียว = `checked_in: true` | ปุ่มสีเทา = `checked_in: false`
-            </div>
+                 <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-2xl flex items-start space-x-3">
+          <span class="text-xl">❌</span>
+          <div class="text-sm">
+            <span class="font-bold">สถานะเริ่มต้นก่อนเช็คชื่อสำหรับทุกคนจะถูกตั้งค่าเป็น "ขาด" อัตโนมัติ</span><br>
+            กดปุ่มเปลี่ยนสถานะ "มา", "สาย", "ลา" หรือ "ขาด" ให้บุคลากรที่มาร่วม
           </div>
+        </div>
+
 
           <div class="bg-gray-50 p-6 rounded-2xl border border-gray-200 space-y-4">
             <div class="flex justify-between items-center">
