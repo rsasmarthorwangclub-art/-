@@ -797,20 +797,18 @@
           const fullName = `${prefixStr}${p.first_name} ${p.last_name}`;
           const subInfo = `${p.school || 'ม.5/3'} • ${p.phone || 'ไม่ระบุเบอร์'}`;
           const codeId = p.id ? String(p.id).slice(-5) : '1388' + index;
-
-          container.innerHTML += `
+ container.innerHTML += `
             <div class="py-3 flex justify-between items-center border-b border-gray-100 last:border-none gap-2">
               <div>
                 <span class="text-blue-600 font-bold text-sm">[${codeId}] ${fullName}</span>
                 <p class="text-xs text-gray-400">${subInfo}</p>
               </div>
-              <div class="flex items-center space-x-2">
-                <button 
-                  id="btn-check-${p.id}"
-                  type="button"
-                  onclick="toggleCheckInStatus('${p.id}', ${isChecked})" 
-                  class="px-4 py-1.5 rounded-xl border text-xs cursor-pointer ${btnClass}">
-                  ${btnText}
+              <div class="flex items-center space-x-1.5 flex-wrap justify-end">
+                <button onclick="setAttendance('${p.id}', 'มา')" class="px-3 py-1 text-xs border rounded-lg transition ${status === 'มา' ? 'bg-emerald-600 text-white font-semibold border-emerald-600 shadow-sm' : 'border-gray-300 hover:bg-gray-100 text-gray-700'}">มา</button>
+                <button onclick="setAttendance('${p.id}', 'สาย')" class="px-3 py-1 text-xs border rounded-lg transition ${status === 'สาย' ? 'bg-amber-500 text-white font-semibold border-amber-500 shadow-sm' : 'border-gray-300 hover:bg-gray-100 text-gray-700'}">สาย</button>
+                <button onclick="setAttendance('${p.id}', 'ลา')" class="px-3 py-1 text-xs border rounded-lg transition ${status === 'ลา' ? 'bg-sky-500 text-white font-semibold border-sky-500 shadow-sm' : 'border-gray-300 hover:bg-gray-100 text-gray-700'}">ลา</button>
+                <button onclick="setAttendance('${p.id}', 'ขาด')" class="px-3 py-1 text-xs border rounded-lg transition ${status === 'ขาด' ? 'bg-rose-500 text-white font-semibold border-rose-500 shadow-sm' : 'border-gray-300 hover:bg-gray-100 text-gray-700'}">ขาด</button>
+                
                 </button>
                 <button onclick="deleteParticipant('${p.id}', '${fullName}')" class="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition" title="ลบรายชื่อนี้">
                   🗑️
